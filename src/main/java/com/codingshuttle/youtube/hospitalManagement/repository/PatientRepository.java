@@ -4,7 +4,6 @@ import com.codingshuttle.youtube.hospitalManagement.dto.BloodGroupCountResponseE
 import com.codingshuttle.youtube.hospitalManagement.entity.Patient;
 import com.codingshuttle.youtube.hospitalManagement.entity.type.BloodGroupType;
 import jakarta.transaction.Transactional;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +16,7 @@ import java.util.List;
 
 public interface PatientRepository extends JpaRepository<Patient, Long> {
     Patient findByName(String name);
+
     List<Patient> findByBirthDateOrEmail(LocalDate birthDate, String email);
 
     List<Patient> findByBirthDateBetween(LocalDate startDate, LocalDate endDate);
@@ -43,7 +43,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     int updateNameWithId(@Param("name") String name, @Param("id") Long id);
 
 
-//    @Query("SELECT p FROM Patient p LEFT JOIN FETCH p.appointments a LEFT JOIN FETCH a.doctor")
+    //    @Query("SELECT p FROM Patient p LEFT JOIN FETCH p.appointments a LEFT JOIN FETCH a.doctor")
     @Query("SELECT p FROM Patient p LEFT JOIN FETCH p.appointments")
     List<Patient> findAllPatientWithAppointment();
 
