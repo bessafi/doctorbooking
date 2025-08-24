@@ -6,4 +6,6 @@ spring:
         client-secret: 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
         #####client-id: ${GOOGLE_CLIENT_ID}
         #####client-secret: ${GOOGLE_CLIENT_SECRET}
+        redirect-uri: "{baseUrl}/api/v1/login"
+
       
