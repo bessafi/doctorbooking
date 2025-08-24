@@ -2,6 +2,8 @@ spring:
   security.oauth2.client:
     registration:
       google:
-          client-id: ${GOOGLE_CLIENT_ID}
-          client-secret: ${GOOGLE_CLIENT_SECRET}
+        client-id: 187926156000-1q9fjvkoooen5r13nplvr5tk9sj9tcj7.apps.googleusercontent.com
+        client-secret: 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
+        #####client-id: ${GOOGLE_CLIENT_ID}
+        #####client-secret: ${GOOGLE_CLIENT_SECRET}
       
