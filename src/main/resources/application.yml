@@ -4,11 +4,8 @@ spring:
       google:
         client-id: 187926156000-1q9fjvkoooen5r13nplvr5tk9sj9tcj7.apps.googleusercontent.com
         client-secret: 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
-        scope:
-              - email
-              - profile
-    provider:
-      google:
-        issuer-uri: https://accounts.google.com
+logging:
+  level:
+    org.springframework.security: DEBUG        
 
       
