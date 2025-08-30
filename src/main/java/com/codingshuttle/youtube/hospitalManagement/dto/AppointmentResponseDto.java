@@ -10,5 +10,8 @@ public class AppointmentResponseDto {
     private LocalDateTime appointmentTime;
     private String reason;
     private DoctorResponseDto doctor;
-//    private PatientResponseDto patient;
+    private PatientResponseDto patient;
+    private String googleEventId;
 }
+
+

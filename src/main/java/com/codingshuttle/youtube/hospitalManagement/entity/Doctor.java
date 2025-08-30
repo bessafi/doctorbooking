@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -16,11 +14,11 @@ import java.util.Set;
 @AllArgsConstructor
 public class Doctor {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId
+    @JoinColumn(name = "id")
     private User user;
 
     @Column(nullable = false, length = 100)
@@ -29,13 +27,10 @@ public class Doctor {
     @Column(length = 100)
     private String specialization;
 
-    @Column(unique = true, length = 100)
+    @Column(unique = true, length = 100, nullable = false)
     private String email;
 
-    @ManyToMany(mappedBy = "doctors")
-    private Set<Department> departments = new HashSet<>();
-
-    @OneToMany(mappedBy = "doctor")
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default // Fixes the Lombok warning
     private List<Appointment> appointments = new ArrayList<>();
-
 }

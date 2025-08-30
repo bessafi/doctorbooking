@@ -1,4 +1,5 @@
 package com.codingshuttle.youtube.hospitalManagement.config;
+//package com.clinic.doctorappointment.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +32,7 @@ public class AppConfig {
     }
 
 //    @Bean
-    UserDetailsService userDetailsService() {
+    /*UserDetailsService userDetailsService() {
         UserDetails user1 = User.withUsername("admin")
                 .password(passwordEncoder().encode("pass"))
                 .roles("ADMIN")
@@ -44,4 +45,11 @@ public class AppConfig {
 
         return new InMemoryUserDetailsManager(user1, user2);
     }
+   */
 }
+
+
+
+
+
+

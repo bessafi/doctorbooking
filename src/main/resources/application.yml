@@ -1,11 +1,62 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+  forward-headers-strategy: framework
+
 spring:
-  security.oauth2.client:
-    registration:
-      google:
-        client-id: 187926156000-1q9fjvkoooen5r13nplvr5tk9sj9tcj7.apps.googleusercontent.com
-        client-secret: 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
+  application:
+    name: doctor-appointment-platform
+  datasource:
+    url: jdbc:postgresql://switchyard.proxy.rlwy.net:28756/railway
+    username: postgres
+    password: YwAjDWUwNxtEfPXPvxvkoKxCAHwDtBdi
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # Using 'update' is safer for development than 'create'
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 187926156000-1q9fjvkoooen5r13nplvr5tk9sj9tcj7.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - openid
+              - email
+              - profile
+              - https://www.googleapis.com/auth/calendar
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+            issuer-uri: https://accounts.google.com  
+
+
+# Custom Application Properties
+app:
+  jwt:
+    secret: cEkfj1I7jW48LQOm6+0KzLlhAnWR3ZsSdpDz4yoOIqw=
+    expiration-ms: 86400000 # 24 hours
+
+  botpress:
+    api-key: YOUR_BOTPRESS_API_KEY # A secret key to secure the Botpress endpoint
+
+  oauth:
+    authorized-redirect-uri: http://localhost:5173/oauth2/redirect # Frontend URL to redirect to after successful login
+
 logging:
   level:
-    org.springframework.security: DEBUG        
-server:
-  forward-headers-strategy: framework      
+    org.springframework.security: DEBUG
+    com.clinic.doctorappointment: DEBUG
+
