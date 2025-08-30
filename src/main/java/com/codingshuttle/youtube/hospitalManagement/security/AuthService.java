@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.Set;
 
-
 @Service
 public class AuthService {
 
@@ -39,8 +38,8 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     public AuthService(@Lazy AuthenticationManager authenticationManager, UserRepository userRepository,
-                         DoctorRepository doctorRepository, PatientRepository patientRepository, RoleRepository roleRepository,
-                         PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
+                           DoctorRepository doctorRepository, PatientRepository patientRepository, RoleRepository roleRepository,
+                           PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.doctorRepository = doctorRepository;
@@ -73,7 +72,8 @@ public class AuthService {
         user.setProviderType(AuthProviderType.EMAIL);
 
         Set<Role> roles = new HashSet<>();
-        // Default to creating a DOCTOR. The patient logic is commented out below.
+        
+        // THE FIX IS HERE: We now default to creating a DOCTOR for email signup.
         Role doctorRole = roleRepository.findByName("ROLE_DOCTOR")
                 .orElseGet(() -> roleRepository.save(new Role("ROLE_DOCTOR")));
         roles.add(doctorRole);
@@ -88,19 +88,32 @@ public class AuthService {
         return new SignupResponseDto(doctor.getId(), doctor.getEmail());
 
         /*
-        // --- To enable PATIENT signup, uncomment this block and restore the if/else logic ---
-        else {
+        // The old patient logic is commented out for future reference
+        if (signUpRequestDto.getRole().equalsIgnoreCase("DOCTOR")) {
+            Role doctorRole = roleRepository.findByName("ROLE_DOCTOR")
+                    .orElseGet(() -> roleRepository.save(new Role("ROLE_DOCTOR")));
+            roles.add(doctorRole);
+            user.setRoles(roles);
+
+            Doctor doctor = Doctor.builder()
+                    .user(user)
+                    .name(signUpRequestDto.getName())
+                    .email(signUpRequestDto.getUsername())
+                    .build();
+            doctorRepository.save(doctor);
+            return new SignupResponseDto(doctor.getId(), doctor.getEmail());
+        } else {
             Role patientRole = roleRepository.findByName("ROLE_PATIENT")
                     .orElseGet(() -> roleRepository.save(new Role("ROLE_PATIENT")));
             roles.add(patientRole);
             user.setRoles(roles);
 
             Patient patient = Patient.builder()
-                    .user(user) // Link user to patient
+                    .user(user)
                     .name(signUpRequestDto.getName())
                     .email(signUpRequestDto.getUsername())
                     .build();
-            patientRepository.save(patient); // Save the patient, which cascades to user
+            patientRepository.save(patient);
             return new SignupResponseDto(patient.getId(), patient.getEmail());
         }
         */
@@ -123,7 +136,8 @@ public class AuthService {
                     newUser.setProviderType(AuthProviderType.GOOGLE);
 
                     Set<Role> roles = new HashSet<>();
-                    // Default to creating a DOCTOR for any new OAuth2 login.
+                    
+                    // Defaulting to creating a DOCTOR for Google sign-in
                     Role doctorRole = roleRepository.findByName("ROLE_DOCTOR")
                             .orElseGet(() -> roleRepository.save(new Role("ROLE_DOCTOR")));
                     roles.add(doctorRole);
@@ -134,13 +148,11 @@ public class AuthService {
                             .name(name)
                             .email(email)
                             .build();
-                    
                     doctorRepository.save(doctor);
-
-                    /*
-                    // --- To enable PATIENT signup for OAuth2, uncomment this block ---
+                    
+                    /* // Patient logic commented out for future use
                     Role patientRole = roleRepository.findByName("ROLE_PATIENT")
-                            .orElseGet(() -> roleRepository.save(new Role("ROLE_PATIENT")));
+                           .orElseGet(() -> roleRepository.save(new Role("ROLE_PATIENT")));
                     roles.add(patientRole);
                     newUser.setRoles(roles);
 
@@ -149,10 +161,9 @@ public class AuthService {
                             .name(name)
                             .email(email)
                             .build();
-                    
                     patientRepository.save(patient);
                     */
-                    
+
                     return newUser;
                 });
 
@@ -164,140 +175,3 @@ public class AuthService {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*    remove  comment if you restore both docotor and patient role 
-@Service
-public class AuthService {
-
-    private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
-    private final DoctorRepository doctorRepository;
-    private final PatientRepository patientRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
-
-    public AuthService(@Lazy AuthenticationManager authenticationManager, UserRepository userRepository,
-                         DoctorRepository doctorRepository, PatientRepository patientRepository, RoleRepository roleRepository,
-                         PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
-        this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.doctorRepository = doctorRepository;
-        this.patientRepository = patientRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
-
-    @Transactional
-    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtTokenProvider.generateToken(authentication);
-        User user = (User) authentication.getPrincipal();
-        return new LoginResponseDto(jwt, user.getId());
-    }
-
-    @Transactional
-    public SignupResponseDto signup(SignUpRequestDto signUpRequestDto) {
-        if (userRepository.findByUsername(signUpRequestDto.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Email is already in use.");
-        }
-
-        User user = new User();
-        user.setUsername(signUpRequestDto.getUsername());
-        user.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
-        user.setProviderType(AuthProviderType.EMAIL);
-
-        Set<Role> roles = new HashSet<>();
-        if (signUpRequestDto.getRole().equalsIgnoreCase("DOCTOR")) {
-            Role doctorRole = roleRepository.findByName("ROLE_DOCTOR")
-                    .orElseGet(() -> roleRepository.save(new Role("ROLE_DOCTOR")));
-            roles.add(doctorRole); // <-- CORRECTED LINE
-            user.setRoles(roles);
-
-            Doctor doctor = Doctor.builder()
-                    .user(user)
-                    .name(signUpRequestDto.getName())
-                    .email(signUpRequestDto.getUsername())
-                    .build();
-            doctorRepository.save(doctor);
-            return new SignupResponseDto(doctor.getId(), doctor.getEmail());
-        } else {
-            Role patientRole = roleRepository.findByName("ROLE_PATIENT")
-                    .orElseGet(() -> roleRepository.save(new Role("ROLE_PATIENT")));
-            roles.add(patientRole); // <-- CORRECTED LINE
-            user.setRoles(roles);
-
-            Patient patient = Patient.builder()
-                    .user(user)
-                    .name(signUpRequestDto.getName())
-                    .email(signUpRequestDto.getUsername())
-                    .build();
-            patientRepository.save(patient);
-            return new SignupResponseDto(patient.getId(), patient.getEmail());
-        }
-    }
-
-    @Transactional
-    public LoginResponseDto handleOAuth2Login(OAuth2User oAuth2User) {
-        String providerId = oAuth2User.getAttribute("sub");
-        String email = oAuth2User.getAttribute("email");
-        String name = oAuth2User.getAttribute("name");
-
-        User user = userRepository.findByProviderIdAndProviderType(providerId, AuthProviderType.GOOGLE)
-                .orElseGet(() -> {
-                    if (userRepository.findByUsername(email).isPresent()) {
-                        throw new IllegalArgumentException("Email is already registered with a different provider.");
-                    }
-                    User newUser = new User();
-                    newUser.setUsername(email);
-                    newUser.setProviderId(providerId);
-                    newUser.setProviderType(AuthProviderType.GOOGLE);
-
-                    Set<Role> roles = new HashSet<>();
-                    Role patientRole = roleRepository.findByName("ROLE_PATIENT")
-                            .orElseGet(() -> roleRepository.save(new Role("ROLE_PATIENT")));
-                    roles.add(patientRole); // <-- CORRECTED LINE
-                    newUser.setRoles(roles);
-
-                    Patient patient = Patient.builder()
-                            .user(newUser)
-                            .name(name)
-                            .email(email)
-                            .build();
-                    
-                    patientRepository.save(patient);
-                    return newUser;
-                });
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtTokenProvider.generateToken(authentication);
-
-        return new LoginResponseDto(jwt, user.getId());
-    }
-}
-*/
