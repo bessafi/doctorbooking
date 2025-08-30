@@ -14,7 +14,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update # Using 'update' is safer for development than 'create'
+      ddl-auto: create # Using 'update' is safer for development than 'create'
     show-sql: true
     properties:
       hibernate:
