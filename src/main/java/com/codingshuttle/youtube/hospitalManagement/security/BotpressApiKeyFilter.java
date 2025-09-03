@@ -26,7 +26,7 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
+         System.out.println(request.getHeader(API_KEY_HEADER));
         // Only apply this filter to the botpress path
         if (!request.getRequestURI().startsWith("/api/botpress")) {
             filterChain.doFilter(request, response);
