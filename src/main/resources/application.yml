@@ -50,7 +50,7 @@ app:
     expiration-ms: 86400000 # 24 hours
 
   botpress:
-    api-key: YOUR_BOTPRESS_API_KEY # A secret key to secure the Botpress endpoint
+    api-key: bp_pat_Mpeyk3HKhK9Rc3nH5NwbhMiZZFFkm0Em6vpX # A secret key to secure the Botpress endpoint
 
   oauth:
     authorized-redirect-uri: http://localhost:5173/oauth2/redirect # Frontend URL to redirect to after successful login
