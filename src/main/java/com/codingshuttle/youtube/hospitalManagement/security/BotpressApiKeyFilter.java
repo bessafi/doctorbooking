@@ -11,12 +11,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
 public class BotpressApiKeyFilter extends OncePerRequestFilter {
+
+    // Manually declared logger to fix the compilation error
+    private static final Logger log = LoggerFactory.getLogger(BotpressApiKeyFilter.class);
 
     @Value("${app.botpress.api-key}")
     private String secretApiKey;
