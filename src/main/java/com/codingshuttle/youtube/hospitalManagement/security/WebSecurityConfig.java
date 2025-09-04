@@ -53,7 +53,7 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
-                        .requestMatchers("/api/botpress/**").permitAll() // Security handled by BotpressApiKeyFilter
+                        .requestMatchers("/botpress/**").permitAll() // Security handled by BotpressApiKeyFilter
                         .requestMatchers("/doctors/**", "/calendar/**").hasRole("DOCTOR")
                         .requestMatchers("/patients/**").hasRole("PATIENT")
                         .requestMatchers("/availability/**").authenticated()
