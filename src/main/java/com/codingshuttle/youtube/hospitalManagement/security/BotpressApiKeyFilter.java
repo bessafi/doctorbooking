@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-
+/* 
 @Component
 @RequiredArgsConstructor
 public class BotpressApiKeyFilter extends OncePerRequestFilter {
@@ -61,4 +61,52 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
         }
         // --- END: Added Logging for Verification ---
     }
+}*/
+
+@Component
+@RequiredArgsConstructor
+public class BotpressApiKeyFilter extends OncePerRequestFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(BotpressApiKeyFilter.class);
+
+    @Value("${app.botpress.api-key}")
+    private String secretApiKey;
+
+    // Use the standard Authorization header
+    private static final String AUTH_HEADER = "Authorization";
+    private static final String API_KEY_PREFIX = "ApiKey ";
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
+        String path = request.getServletPath();
+        // Only apply this filter to the Botpress endpoints
+        if (path != null && path.startsWith("/botpress")) {
+            String authHeader = request.getHeader(AUTH_HEADER);
+            String incomingApiKey = null;
+
+            if (authHeader != null && authHeader.startsWith(API_KEY_PREFIX)) {
+                incomingApiKey = authHeader.substring(API_KEY_PREFIX.length());
+            }
+
+            log.info("--- Botpress API Key Verification ---");
+            log.info("Request Path: {}", path);
+            log.info("Expected API Key: {}", secretApiKey);
+            log.info("Received API Key: {}", incomingApiKey);
+
+            if (secretApiKey.equals(incomingApiKey)) {
+                log.info("Access Granted: API keys match.");
+                filterChain.doFilter(request, response);
+            } else {
+                log.warn("Access Denied: API key is missing or invalid.");
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid API Key");
+                return;
+            }
+        } else {
+            // If it's not a botpress URL, continue to the next filter
+            filterChain.doFilter(request, response);
+        }
+    }
 }
+
