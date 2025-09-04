@@ -64,9 +64,13 @@ public class WebSecurityConfig {
                         .successHandler(oAuth2AuthenticationSuccessHandler)
                         .failureHandler(oAuth2AuthenticationFailureHandler)
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(botpressApiKeyFilter, JwtAuthenticationFilter.class); // Add Botpress filter before JWT
+               
+                // --- THIS IS THE FIX ---
+                // We run our API key filter BEFORE the main AuthorizationFilter.
+                .addFilterBefore(botpressApiKeyFilter, AuthorizationFilter.class) // <-- Runs early
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
+                
         return http.build();
     }
 
