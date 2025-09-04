@@ -21,6 +21,8 @@ import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
+
 
 
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -53,7 +55,8 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
-                        .requestMatchers("/api/botpress/**").permitAll() // Security handled by BotpressApiKeyFilter
+                        //.requestMatchers("/api/botpress/**").permitAll() // Security handled by BotpressApiKeyFilter
+                        .requestMatchers("/botpress/**").permitAll()
                         .requestMatchers("/doctors/**", "/calendar/**").hasRole("DOCTOR")
                         .requestMatchers("/patients/**").hasRole("PATIENT")
                         .requestMatchers("/availability/**").authenticated()
