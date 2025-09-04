@@ -36,9 +36,8 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
         // --- START: Added Logging for Verification ---
 
         // Only apply this filter to the Botpress endpoints
-        if (request.getRequestURI().startsWith("/api/v1/botpress")) {
+        if (request.getServletPath().startsWith("/botpress")) {
             String incomingApiKey = request.getHeader("X-API-KEY");
-
             log.info("--- Botpress API Key Verification ---");
             log.info("Request URI: {}", request.getRequestURI());
             log.info("Expected API Key: {}", secretApiKey);
