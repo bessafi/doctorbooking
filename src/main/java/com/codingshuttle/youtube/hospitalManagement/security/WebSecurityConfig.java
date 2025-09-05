@@ -56,7 +56,8 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
-                        .requestMatchers("/botpress/**").permitAll() // Security handled by BotpressApiKeyFilter
+                       // .requestMatchers("/botpress/**").permitAll() // Security handled by BotpressApiKeyFilter
+                        .requestMatchers("/api/v1/botpress/**").permitAll() // match real path
                         .requestMatchers("/botpress/health-check").permitAll()                
                         .requestMatchers("/doctors/**", "/calendar/**").hasRole("DOCTOR")
                         .requestMatchers("/patients/**").hasRole("PATIENT")
