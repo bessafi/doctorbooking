@@ -78,7 +78,7 @@ public class WebSecurityConfig {
                 
         return http.build();
     }
-
+/*
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -92,8 +92,23 @@ public class WebSecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+*/
+@Bean
+public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowCredentials(true);
 
+    // DEBUG MODE: allow everything
+    configuration.setAllowedOriginPatterns(List.of("*"));
 
+    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-API-KEY", "Accept", "Origin"));
+    configuration.setExposedHeaders(List.of("Location")); // optional
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+}
     
     /**
      * Creates a custom JwtDecoder that allows for a 5-minute clock skew to prevent
