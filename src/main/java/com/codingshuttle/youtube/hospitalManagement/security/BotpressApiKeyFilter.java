@@ -76,6 +76,13 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
     private static final String AUTH_HEADER = "Authorization";
     private static final String API_KEY_PREFIX = "ApiKey ";
 
+
+
+    @PostConstruct
+    public void printApiKey() {
+        log.info("Configured Botpress API Key: '{}'", secretApiKey);
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
