@@ -84,6 +84,7 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
         log.info("Configured Botpress API Key: '{}'", secretApiKey);
     }
 
+    /*
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -116,5 +117,54 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
     }
+*/
+
+@Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+        if (!path.contains("/botpress/")) {
+            // Not a botpress request → skip
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        log.info("--- Botpress API Key Verification ---");
+        log.info("Request Path: {}", path);
+
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("ApiKey ")) {
+            log.warn("Missing or invalid Authorization header.");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        String receivedApiKey = authHeader.substring("ApiKey ".length()).trim();
+        log.info("Expected API Key: {}", secretApiKey);
+        log.info("Received API Key: {}", receivedApiKey);
+
+        if (secretApiKey.equals(receivedApiKey)) {
+            log.info("Access Granted: API keys match.");
+
+            // ✅ Mark as authenticated (no roles needed for Botpress)
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken("botpress", null, List.of());
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            filterChain.doFilter(request, response);
+        } else {
+            log.warn("Access Denied: API key mismatch.");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
+    }
+
+
+
+
+
+    
 }
 
