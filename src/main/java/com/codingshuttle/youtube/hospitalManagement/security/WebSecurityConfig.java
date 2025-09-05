@@ -47,6 +47,7 @@ public class WebSecurityConfig {
     @Value("${app.oauth.authorized-redirect-uri}")
     private String authorizedRedirectUri;
 
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -70,7 +71,7 @@ public class WebSecurityConfig {
                
                 // --- THIS IS THE FIX ---
                 // We run our API key filter BEFORE the main AuthorizationFilter.
-                .addFilterBefore(botpressApiKeyFilter, AuthorizationFilter.class) // <-- Runs early
+                .addFilterBefore(botpressApiKeyFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
                 
