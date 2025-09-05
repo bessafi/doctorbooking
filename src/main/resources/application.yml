@@ -57,5 +57,5 @@ app:
 logging:
   level:
     org.springframework.security: DEBUG
-    com.clinic.doctorappointment: DEBUG
+    com.codingshuttle.youtube.hospitalManagement.security: DEBUG
 
