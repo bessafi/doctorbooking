@@ -56,7 +56,7 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()               
                         .requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
                        // .requestMatchers("/botpress/**").permitAll() // Security handled by BotpressApiKeyFilter
                        // .requestMatchers("/api/v1/botpress/**").permitAll() // match real path
