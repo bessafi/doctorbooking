@@ -113,7 +113,8 @@ public class WebSecurityConfig {
                         .failureHandler(oAuth2AuthenticationFailureHandler)
                 )
                 // --- FIX #2: This ensures custom filters run at the correct time ---
-                .addFilterBefore(botpressApiKeyFilter, AuthorizationFilter.class)
+                //.addFilterBefore(botpressApiKeyFilter, AuthorizationFilter.class)
+                .addFilterBefore(botpressApiKeyFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
