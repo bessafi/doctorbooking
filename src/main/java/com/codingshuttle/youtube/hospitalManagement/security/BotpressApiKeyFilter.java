@@ -97,7 +97,7 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
         log.info("Configured Botpress API Key: '{}'", secretApiKey);
     }
 
-    /*
+    
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -130,8 +130,8 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
     }
-*/
 
+/*
 @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -173,7 +173,7 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
     }
-
+*/
 
 
 
