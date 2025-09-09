@@ -48,7 +48,7 @@ public class WebSecurityConfig {
     @Value("${app.oauth.authorized-redirect-uri}")
     private String authorizedRedirectUri;
 
-    
+    /*
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -86,6 +86,44 @@ public class WebSecurityConfig {
                 
         return http.build();
     }
+*/
+
+ @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        // --- FIX #1: This is the most critical fix for CORS ---
+                        // It allows all OPTIONS preflight requests to pass through security.
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        
+                        // Public endpoints
+                        .requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
+                        .requestMatchers("/botpress/**").permitAll()
+
+                        // Secured endpoints
+                        .requestMatchers("/doctors/**").hasRole("DOCTOR")
+                        .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
+                )
+                // --- FIX #2: This ensures custom filters run at the correct time ---
+                .addFilterBefore(botpressApiKeyFilter, AuthorizationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+
+
+
+
+    
 /*
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
