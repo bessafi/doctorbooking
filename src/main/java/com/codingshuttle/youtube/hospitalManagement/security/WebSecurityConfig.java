@@ -146,7 +146,9 @@ public CorsConfigurationSource corsConfigurationSource() {
 
     // DEBUG MODE: allow everything
     //configuration.setAllowedOriginPatterns(List.of("http://localhost:5173"));
-    configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+    //configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+    configuration.setAllowedOriginPatterns(List.of("http://localhost:*", "https://doctorbooking-production.up.railway.app"));
+
 
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-API-KEY", "Accept", "Origin"));
