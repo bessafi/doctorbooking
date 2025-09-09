@@ -152,6 +152,7 @@ public CorsConfigurationSource corsConfigurationSource() {
 
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-API-KEY", "Accept", "Origin"));
+    configuration.setAllowedHeaders(List.of("*"));  
     configuration.setExposedHeaders(List.of("Location")); // optional
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
