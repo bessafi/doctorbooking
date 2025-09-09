@@ -75,8 +75,13 @@ public class WebSecurityConfig {
                
                 // --- THIS IS THE FIX ---
                 // We run our API key filter BEFORE the main AuthorizationFilter.
-                .addFilterBefore(botpressApiKeyFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                //.addFilterBefore(botpressApiKeyFilter, UsernamePasswordAuthenticationFilter.class)
+                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+                 //to test the  fix cors error 
+                 .addFilterBefore(botpressApiKeyFilter, AuthorizationFilter.class)
+                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 
                 
         return http.build();
