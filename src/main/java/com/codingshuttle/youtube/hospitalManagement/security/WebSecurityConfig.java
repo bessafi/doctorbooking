@@ -13,7 +13,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.http.HttpMethod; 
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -48,7 +47,7 @@ public class WebSecurityConfig {
     @Value("${app.oauth.authorized-redirect-uri}")
     private String authorizedRedirectUri;
 
-    /*
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -56,11 +55,9 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()               
                         .requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
                        // .requestMatchers("/botpress/**").permitAll() // Security handled by BotpressApiKeyFilter
-                       // .requestMatchers("/api/v1/botpress/**").permitAll() // match real path
-                        .requestMatchers("/api/v1/botpress/**").authenticated()               
+                        .requestMatchers("/api/v1/botpress/**").permitAll() // match real path
                         .requestMatchers("/botpress/health-check").permitAll()                
                         .requestMatchers("/doctors/**", "/calendar/**").hasRole("DOCTOR")
                         .requestMatchers("/patients/**").hasRole("PATIENT")
@@ -75,57 +72,13 @@ public class WebSecurityConfig {
                
                 // --- THIS IS THE FIX ---
                 // We run our API key filter BEFORE the main AuthorizationFilter.
-                //.addFilterBefore(botpressApiKeyFilter, UsernamePasswordAuthenticationFilter.class)
-                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-                 //to test the  fix cors error 
-                 .addFilterBefore(botpressApiKeyFilter, AuthorizationFilter.class)
-                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+                .addFilterBefore(botpressApiKeyFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
                 
         return http.build();
     }
-*/
 
- @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        // --- FIX #1: This is the most critical fix for CORS ---
-                        // It allows all OPTIONS preflight requests to pass through security.
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        
-                        // Public endpoints
-                        .requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
-                        .requestMatchers("/botpress/**").permitAll()
-
-                        // Secured endpoints
-                        .requestMatchers("/doctors/**").hasRole("DOCTOR")
-                        .anyRequest().authenticated()
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                        .successHandler(oAuth2AuthenticationSuccessHandler)
-                        .failureHandler(oAuth2AuthenticationFailureHandler)
-                )
-                // --- FIX #2: This ensures custom filters run at the correct time ---
-                //.addFilterBefore(botpressApiKeyFilter, AuthorizationFilter.class)
-                .addFilterBefore(botpressApiKeyFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
-
-
-
-
-
-    
-/*
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -139,27 +92,8 @@ public class WebSecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-*/
-@Bean
-public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowCredentials(true);
-
-    // DEBUG MODE: allow everything
-    //configuration.setAllowedOriginPatterns(List.of("http://localhost:5173"));
-    //configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-    configuration.setAllowedOriginPatterns(List.of("http://localhost:*", "https://doctorbooking-production.up.railway.app"));
 
 
-    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-API-KEY", "Accept", "Origin"));
-    configuration.setAllowedHeaders(List.of("*"));  
-    configuration.setExposedHeaders(List.of("Location")); // optional
-
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    return source;
-}
     
     /**
      * Creates a custom JwtDecoder that allows for a 5-minute clock skew to prevent
