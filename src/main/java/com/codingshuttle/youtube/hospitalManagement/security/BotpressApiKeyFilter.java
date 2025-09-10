@@ -16,19 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.List;
-
-
-
-
-
-
-
-
 /* 
 @Component
 @RequiredArgsConstructor
@@ -97,7 +84,7 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
         log.info("Configured Botpress API Key: '{}'", secretApiKey);
     }
 
-    
+    /*
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -130,8 +117,8 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
     }
+*/
 
-/*
 @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -173,11 +160,10 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
     }
-*/
+
 
 
 
 
     
 }
-
