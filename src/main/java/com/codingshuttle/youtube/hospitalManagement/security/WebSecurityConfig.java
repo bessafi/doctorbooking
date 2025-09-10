@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.http.HttpMethod;
 
 
 
