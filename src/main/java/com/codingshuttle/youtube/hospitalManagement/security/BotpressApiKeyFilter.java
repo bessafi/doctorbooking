@@ -270,7 +270,21 @@ protected void doFilterInternal(HttpServletRequest request,
             filterChain.doFilter(request, response);
         } else {
             log.warn("❌ Access Denied: API key missing or mismatch.");
+            addCorsHeaders(request, response);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
+    }
+
+
+     /**
+     * Ensures CORS headers are returned even when access is denied.
+     */
+    private void addCorsHeaders(HttpServletRequest request, HttpServletResponse response) {
+        String origin = request.getHeader("Origin");
+        if (origin != null) {
+            response.setHeader("Access-Control-Allow-Origin", origin);
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Vary", "Origin");
         }
     }
     
