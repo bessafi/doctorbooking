@@ -123,6 +123,7 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
     }
 */
 
+/*    
 @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -164,8 +165,54 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
     }
+*/
 
 
+    
+@Override
+protected void doFilterInternal(HttpServletRequest request,
+                                HttpServletResponse response,
+                                FilterChain filterChain) throws ServletException, IOException {
+
+    String path = request.getRequestURI();
+
+    // Only secure /api/v1/botpress/**
+    if (!path.contains("/api/v1/botpress/")) {
+        filterChain.doFilter(request, response);
+        return;
+    }
+
+    log.info("--- Botpress API Key Verification ---");
+    log.info("Request Path: {}", path);
+
+    String authHeader = request.getHeader("Authorization");
+    String apiKeyHeader = request.getHeader("X-API-KEY");
+
+    String receivedApiKey = null;
+
+    if (authHeader != null && authHeader.startsWith("ApiKey ")) {
+        receivedApiKey = authHeader.substring("ApiKey ".length()).trim();
+    } else if (apiKeyHeader != null) {
+        receivedApiKey = apiKeyHeader.trim();
+    }
+
+    log.info("Expected API Key: {}", secretApiKey);
+    log.info("Received API Key: {}", receivedApiKey);
+
+    if (secretApiKey.equals(receivedApiKey)) {
+        log.info("Access Granted: API keys match.");
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken("botpress", null, List.of());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        filterChain.doFilter(request, response);
+    } else {
+        log.warn("Access Denied: API key mismatch.");
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+    }
+}
 
 
 
