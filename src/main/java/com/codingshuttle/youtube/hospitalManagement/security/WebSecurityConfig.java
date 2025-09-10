@@ -84,7 +84,8 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         // configuration.setAllowedOrigins(List.of("http://localhost:5173", authorizedRedirectUri)); // Add your frontend URL 
         // configuration.setAllowedOrigins(List.of("*", authorizedRedirectUri)); // Add your frontend URL
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", authorizedRedirectUri));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", authorizedRedirectUri, "https://studio.botpress.cloud"   // ✅ allow Botpress cloud
+    ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-API-KEY"));
         configuration.setAllowCredentials(true);
