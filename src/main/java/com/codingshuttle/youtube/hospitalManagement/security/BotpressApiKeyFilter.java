@@ -80,6 +80,7 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
     // Use the standard Authorization header
     private static final String AUTH_HEADER = "Authorization";
     private static final String API_KEY_PREFIX = "ApiKey ";
+    private static final String API_KEY_HEADER = "X-API-KEY";
 
 
 
@@ -177,7 +178,7 @@ protected void doFilterInternal(HttpServletRequest request,
     String path = request.getRequestURI();
 
     // Only secure /api/v1/botpress/**
-    if (!path.contains("/api/v1/botpress/")) {
+    if (!path.contains("/botpress/")) {
         filterChain.doFilter(request, response);
         return;
     }
