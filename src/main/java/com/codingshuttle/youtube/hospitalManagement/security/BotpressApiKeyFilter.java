@@ -169,7 +169,7 @@ public class BotpressApiKeyFilter extends OncePerRequestFilter {
 */
 
 
-    
+/*    
 @Override
 protected void doFilterInternal(HttpServletRequest request,
                                 HttpServletResponse response,
@@ -214,8 +214,62 @@ protected void doFilterInternal(HttpServletRequest request,
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     }
 }
+*/
 
+@Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+        log.info("Full Request URL: {}", request.getRequestURL());
+        log.info("Servlet Path: {}", request.getServletPath());
+        log.info("Request URI: {}", path);
 
+        // Dump all headers for debugging
+        Enumeration<String> headerNames = request.getHeaderNames();
+        if (headerNames != null) {
+            log.info("--- Incoming Headers ---");
+            while (headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                log.info("{}: {}", headerName, request.getHeader(headerName));
+            }
+        }
+
+        // Only apply this filter for botpress endpoints
+        if (!(path.contains("/botpress/"))) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        log.info("--- Botpress API Key Verification ---");
+
+        // 1. Try Authorization: ApiKey <key>
+        String authHeader = request.getHeader(AUTH_HEADER);
+        String receivedApiKey = null;
+        if (authHeader != null && authHeader.startsWith(API_KEY_PREFIX)) {
+            receivedApiKey = authHeader.substring(API_KEY_PREFIX.length()).trim();
+        }
+
+        // 2. Fallback to X-API-KEY
+        if (receivedApiKey == null) {
+            receivedApiKey = request.getHeader(API_KEY_HEADER);
+        }
+
+        log.info("Expected API Key: {}", secretApiKey);
+        log.info("Received API Key: {}", receivedApiKey);
+
+        if (secretApiKey.equals(receivedApiKey)) {
+            log.info("✅ Access Granted: API keys match.");
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken("botpress", null, Collections.emptyList());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            filterChain.doFilter(request, response);
+        } else {
+            log.warn("❌ Access Denied: API key missing or mismatch.");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
+    }
     
 }
