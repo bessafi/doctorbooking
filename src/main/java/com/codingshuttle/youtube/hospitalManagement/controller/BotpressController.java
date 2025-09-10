@@ -48,10 +48,6 @@ public class BotpressController {
         AppointmentResponseDto createdAppointment = appointmentService.createAppointment(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAppointment);
     }
-    
-    @GetMapping("/health-check")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Backend is reachable!");
-    }
+
 
 }
