@@ -86,7 +86,7 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         // configuration.setAllowedOrigins(List.of("http://localhost:5173", authorizedRedirectUri)); // Add your frontend URL 
         // configuration.setAllowedOrigins(List.of("*", authorizedRedirectUri)); // Add your frontend URL
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173", authorizedRedirectUri, "https://studio.botpress.cloud"   // ✅ allow Botpress cloud
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173", "https://doctor-booking-dashboard-production-f9c1.up.railway.app", authorizedRedirectUri, "https://studio.botpress.cloud"   // ✅ allow Botpress cloud
     ));
         
         
