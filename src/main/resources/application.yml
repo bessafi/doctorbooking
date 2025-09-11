@@ -52,7 +52,8 @@ app:
   botpress:
     api-key: sk_prod_dG9wLWVjcmV0LWtleS1mb3ItYm90cHJlc3MtMTIzNDU= # A secret key to secure the Botpress endpoint
   oauth:
-    authorized-redirect-uri: http://localhost:5173/oauth2/redirect # Frontend URL to redirect to after successful login
+    ##authorized-redirect-uri: http://localhost:5173/oauth2/redirect # Frontend URL to redirect to after successful login
+      authorized-redirect-uri: https://doctor-booking-dashboard-production-f9c1.up.railway.app # Frontend URL to redirect to after successful login
 
 logging:
   level:
