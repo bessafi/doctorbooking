@@ -33,7 +33,10 @@ spring:
               - email
               - profile
               - https://www.googleapis.com/auth/calendar
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            #redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            redirect-uri: "{baseUrl}/auth-handler"
+
+            
         provider:
           google:
             authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
